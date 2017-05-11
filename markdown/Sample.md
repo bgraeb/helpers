@@ -12,6 +12,13 @@ Setex-Header3 layer 2
 
 #### Atx-Header2 layer 4
 
+```powershell
+Get-MarkdownToc -FilePath MyMarkdown.md -OutputType Toc
+# comment
+```
+
+
+
 #### Atx-Header3 layer 4
 
 #### Atx-Header4 layer 4

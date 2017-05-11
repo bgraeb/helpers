@@ -1,8 +1,18 @@
 function Get-MarkdownToc {
+    [CmdletBinding(PositionalBinding=$false)]  
     param(
-        #Markdown file to analyze
+        [Parameter(Mandatory=$true,
+                   Position=0,
+                   ValueFromPipeline=$true,
+                   ValueFromPipelineByPropertyName=$true,
+                   HelpMessage="Specifies a path to a markdown file. Wildcards are permitted.")]
+        [alias('Path')]
         $Filepath,
-        #Fileencoding
+        [Parameter(Mandatory=$false,
+                   ValueFromPipeline=$true,
+                   ValueFromPipelineByPropertyName=$true,
+                   HelpMessage="Specify the file encoding.")]
+
         [ValidateSet(
             "Unknown",
             "String",
@@ -18,7 +28,11 @@ function Get-MarkdownToc {
             "BigEndianUTF32"
         )]
         $Encoding = 'Ascii',
-        #OutputType to return
+                [Parameter(Mandatory=$false,
+                   Position=1,
+                   ValueFromPipeline=$true,
+                   ValueFromPipelineByPropertyName=$true,
+                   HelpMessage="Output type to return (Objects, toc, overview).")]
         [ValidateSet(
             'Objects',
             'Toc',
@@ -29,6 +43,10 @@ function Get-MarkdownToc {
     $file = get-item $filepath
 
     $content = (get-content $file -Encoding $Encoding ) -join "`n"
+
+    $FencedCodeBlock = '\`\`\`[a-z]*\n[\s\S]*?\n\`\`\`'
+
+    $content = $content -replace $FencedCodeBlock
 
     class MarkDownHeader {
         [int]$IntLayer
@@ -74,17 +92,17 @@ function Get-MarkdownToc {
     }
 
     switch ($OutPutType) {
-        'Objects'{
+        'Objects' {
             $headerObjects
         }
-        'Toc'{
+        'Toc' {
             $outString = @()
             $outString += '**Table of contents**'
             $outString += $headerObjects.MdLinkString
             $outString | Out-String
         }
-        'Overview'{
-            $headerObjects | ForEach-Object { '{0}- {1}' -f ('  ' * ($_.IntLayer-1)), $_.Name
+        'Overview' {
+            $headerObjects | ForEach-Object { '{0}- {1}' -f ('  ' * ($_.IntLayer - 1)), $_.Name
             }
         }
     }
