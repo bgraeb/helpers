@@ -80,7 +80,7 @@ function Get-MarkdownToc {
         setex
     }
 
-    $regex = '(?<name>[^\n\r]+)\n(?<StringLayer>[-|=]{2,})$|^((?<StringLayer>#{1,6})\s*(?<name>.+))$'
+    $regex = '(?<name>[^\n\r]+)\n(?<StringLayer>[-|=]{2,})$|^((?<StringLayer>#{1,6}) *\b(?<name>.+))$'
 
     $options = [text.regularexpressions.regexoptions]::Multiline
 
